@@ -1,26 +1,53 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import WelcomeScreen from '../src/screens/WelcomeScreen';
+import SignInScreen from '../src/screens/SignInScreen';
+import SignUpScreen from '../src/screens/SignUpScreen';
+import DashboardScreen from '../src/screens/DashboardScreen';
+import ManualScannerScreen from '../src/screens/ManualScannerScreen';
+import ReportScreen from '../src/screens/ReportScreen';
+import HistoryScreen from '../src/screens/HistoryScreen';
+import SettingsScreen from '../src/screens/SettingsScreen';
+import CustomDrawer from '../src/components/CustomDrawer';
 
-const App = () => {
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+
+// ✅ **Drawer Navigation (Main App After Login)**
+const DrawerNavigator = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Hello, React Native!</Text>
-    </View>
+    <Drawer.Navigator
+      initialRouteName="Dashboard" // ✅ Start in Dashboard first
+      drawerContent={props => <CustomDrawer {...props} />}
+      screenOptions={{
+        headerShown: false,
+        drawerStyle: {width: 300},
+      }}>
+      <Drawer.Screen name="Dashboard" component={DashboardScreen} />
+      <Drawer.Screen name="ManualScanner" component={ManualScannerScreen} />
+      <Drawer.Screen name="Report" component={ReportScreen} />
+      <Drawer.Screen name="History" component={HistoryScreen} />
+      <Drawer.Screen name="Settings" component={SettingsScreen} />
+    </Drawer.Navigator>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-});
+// ✅ **Stack Navigation (Handles Login & Drawer)**
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {/* Authentication Screens */}
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        {/* ✅ After Login, go to Drawer Navigator (Dashboard first) */}
+        <Stack.Screen name="Main" component={DrawerNavigator} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 export default App;

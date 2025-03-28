@@ -1,4 +1,6 @@
 {
   "name": "mobileapp",
-  "displayName": "mobileapp"
+  "displayName": "mobileapp",
+  "icon": "./src/assets/icon.png",
+  "assets": "./src/assets/fonts/Poppins"
 }
