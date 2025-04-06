@@ -5,6 +5,7 @@ import {RadioButton} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TopNavBar from '../components/TopNavBar';
 import BottomNavBar from '../components/BottomNavBar';
+import DeleteFlowModalController from '../modals/DeleteFlowModalController';
 
 const SettingsScreen = ({navigation}) => {
   const [profileImage, setProfileImage] = useState(null);
@@ -23,7 +24,9 @@ const SettingsScreen = ({navigation}) => {
   const [vibrationOnNotification, setVibrationOnNotification] = useState(true);
   const [deleteReason, setDeleteReason] = useState(null); // Add state for selected reason
   const [otherReason, setOtherReason] = useState(''); // Add state for other reason
+  const [showDeleteModal, setShowDeleteModal] = useState(false);// State to control the delete modal
 
+  
   // **Handles Image Selection**
   const handleEditProfile = () => {
     launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
@@ -45,13 +48,14 @@ const SettingsScreen = ({navigation}) => {
     setModalVisible(true);
   };
 
+
   return (
     <View style={styles.container}>
       {/* Top Navigation */}
       <TopNavBar navigation={navigation} />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        behavior={Platform.OS === 'android' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           {/* Profile Section */}
           <View style={styles.profileSection}>
@@ -359,7 +363,10 @@ const SettingsScreen = ({navigation}) => {
                     onChangeText={setOtherReason}
                   />
                 )}
-                <TouchableOpacity style={styles.saveButton}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => setShowDeleteModal(true)} // ✅ Launch modal
+                >
                   <Text style={styles.saveText}>Confirm</Text>
                 </TouchableOpacity>
               </View>
@@ -459,6 +466,11 @@ const SettingsScreen = ({navigation}) => {
           </View>
         </TouchableOpacity>
       </Modal>
+      {/* ✅ Delete Account Modal Controller */}
+      <DeleteFlowModalController
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+      />
     </View>
   );
 };
