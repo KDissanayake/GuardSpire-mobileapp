@@ -1,11 +1,24 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView, Switch, KeyboardAvoidingView, Platform, Modal,} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ScrollView,
+  Switch,
+  KeyboardAvoidingView,
+  Platform,
+  Modal,
+} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {RadioButton} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TopNavBar from '../components/TopNavBar';
 import BottomNavBar from '../components/BottomNavBar';
 import DeleteFlowModalController from '../modals/DeleteFlowModalController';
+import UpdateOtpFlowModal from '../modals/UpdateOtpFlowModal';
 
 const SettingsScreen = ({navigation}) => {
   const [profileImage, setProfileImage] = useState(null);
@@ -24,9 +37,10 @@ const SettingsScreen = ({navigation}) => {
   const [vibrationOnNotification, setVibrationOnNotification] = useState(true);
   const [deleteReason, setDeleteReason] = useState(null); // Add state for selected reason
   const [otherReason, setOtherReason] = useState(''); // Add state for other reason
-  const [showDeleteModal, setShowDeleteModal] = useState(false);// State to control the delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // State to control the delete modal
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpTarget, setOtpTarget] = useState(null); // 'email' or 'password'
 
-  
   // **Handles Image Selection**
   const handleEditProfile = () => {
     launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
@@ -47,7 +61,6 @@ const SettingsScreen = ({navigation}) => {
     setModalPosition({x: pageX, y: pageY});
     setModalVisible(true);
   };
-
 
   return (
     <View style={styles.container}>
@@ -93,7 +106,12 @@ const SettingsScreen = ({navigation}) => {
                   style={styles.input}
                   placeholder="Enter your new username"
                 />
-                <TouchableOpacity style={styles.saveButton}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => {
+                    setShowOtpModal(true);
+                    setOtpTarget('username');                    
+                  }}>
                   <Text style={styles.saveText}>Save Changes</Text>
                 </TouchableOpacity>
 
@@ -107,7 +125,12 @@ const SettingsScreen = ({navigation}) => {
                   style={styles.input}
                   placeholder="Enter your new email address"
                 />
-                <TouchableOpacity style={styles.saveButton}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => {
+                    setOtpTarget('password');
+                    setShowOtpModal(true);
+                  }}>
                   <Text style={styles.saveText}>Save Changes</Text>
                 </TouchableOpacity>
               </View>
@@ -133,7 +156,9 @@ const SettingsScreen = ({navigation}) => {
                   secureTextEntry
                   placeholder="Enter new password"
                 />
-                <TouchableOpacity style={styles.saveButton}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => setOtpModalVisible(true)}>
                   <Text style={styles.saveText}>Save Changes</Text>
                 </TouchableOpacity>
               </View>
@@ -466,11 +491,22 @@ const SettingsScreen = ({navigation}) => {
           </View>
         </TouchableOpacity>
       </Modal>
-      {/* ✅ Delete Account Modal Controller */}
+      {/* Delete Account Modal Controller */}
       <DeleteFlowModalController
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
       />
+
+      {/* Update otp Modal */}
+      <UpdateOtpFlowModal
+        visible={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onOtpSuccess={() => {
+          console.log('Username/email/password updated');
+        }}
+        skipOtp={otpTarget === 'username'} // skip OTP only for username
+      />
+
     </View>
   );
 };

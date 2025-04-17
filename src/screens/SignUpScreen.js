@@ -1,10 +1,29 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, ScrollView,} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import UpdateOtpFlowModal from '../modals/UpdateOtpFlowModal';
 
 const SignUpScreen = ({navigation}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+
+  const handleSignUp = () => {
+    // Call backend sign-up logic here
+
+    // Trigger OTP verification modal
+    setShowOtpModal(true);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -13,7 +32,7 @@ const SignUpScreen = ({navigation}) => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Logo */}
         <Image
-          source={require('../assets/Logo.png')} // Replace with actual logo path
+          source={require('../assets/Logo.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -44,13 +63,8 @@ const SignUpScreen = ({navigation}) => {
             placeholderTextColor="#888"
             secureTextEntry={!passwordVisible}
           />
-          <TouchableOpacity
-            onPress={() => setPasswordVisible(!passwordVisible)}>
-            <Icon
-              name={passwordVisible ? 'eye' : 'eye-slash'}
-              size={20}
-              color="black"
-            />
+          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Icon name={passwordVisible ? 'eye' : 'eye-slash'} size={20} color="black" />
           </TouchableOpacity>
         </View>
 
@@ -62,32 +76,33 @@ const SignUpScreen = ({navigation}) => {
             placeholderTextColor="#888"
             secureTextEntry={!confirmPasswordVisible}
           />
-          <TouchableOpacity
-            onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}>
-            <Icon
-              name={confirmPasswordVisible ? 'eye' : 'eye-slash'}
-              size={20}
-              color="black"
-            />
+          <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}>
+            <Icon name={confirmPasswordVisible ? 'eye' : 'eye-slash'} size={20} color="black" />
           </TouchableOpacity>
         </View>
 
         {/* Sign Up Button */}
-        <TouchableOpacity
-          style={styles.signUpButton}
-          onPress={() => console.log('Sign Up Pressed')} // Replace with backend call
-        >
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
           <Text style={styles.signUpText}>Sign Up</Text>
         </TouchableOpacity>
 
         {/* Already Have an Account? Redirect to Sign-In */}
         <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
           <Text style={styles.signInText}>
-            Already have an account?{' '}
-            <Text style={styles.signInLink}>Sign In</Text>
+            Already have an account? <Text style={styles.signInLink}>Sign In</Text>
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* OTP Verification Modal */}
+      <UpdateOtpFlowModal
+        visible={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onOtpSuccess={() => {
+          console.log('Signup confirmed via OTP');
+          setShowOtpModal(false);
+        }}
+      />
     </KeyboardAvoidingView>
   );
 };
@@ -108,7 +123,6 @@ const styles = StyleSheet.create({
     height: 250,
     marginTop: 10,
     marginBottom: 20,
-    justifyContent: 'center',
   },
   title: {
     fontSize: 25,
